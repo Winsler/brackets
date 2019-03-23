@@ -1,14 +1,15 @@
 module.exports = function check(str, bracketsConfig) {
 
-  Array.prototype.has = function(n) {
-  	if (this.indexOf(n) == -1) return false;
-  	return true;
-  }
-
-
   let openBrackets = [],
   		closeBrackets = [],
   		doubleBrackets = [];
+
+  openBrackets.__proto__.has = function(n) {
+    return !(this.indexOf(n) == -1)
+  }
+  doubleBrackets.__proto__.has = function(n) {
+    return !(this.indexOf(n) == -1)
+  }
 
   bracketsConfig.forEach(function(brackets) {
 
@@ -21,13 +22,15 @@ module.exports = function check(str, bracketsConfig) {
 
   });
 
+
 	
   let stack = [];
 
-  
-  if (!((str.length % 2 == 0) && (!openBrackets.has(str[0]) || !doubleBrackets.has(str[0])))) return false;
+  //str must be even length, start with open/double bracket and end with close/double bracket 
+  if (!((str.length % 2 == 0) && (!openBrackets.has(str[0]) || !doubleBrackets.has(str[0])) &&
+    (!closeBrackets.has(str[str.length-1]) || !doubleBrackets.has(str[str.length-1])))) return false;
+ 
   stack.push(str[0]);
-
 
   for (let i = 1; i < str.length; i++) {
   	if ((openBrackets.has(str[i])) || (doubleBrackets.has(str[i]) && stack[stack.length-1] != str[i])) {
@@ -40,8 +43,7 @@ module.exports = function check(str, bracketsConfig) {
 
   };
 	
-	if (!stack.length) return true
-	return false
+  return !stack.length;
 
 }
 
